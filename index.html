@@ -1,0 +1,62 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calculadora de Energia</title>
+<style>
+body{font-family:Arial;background:#0b1220;color:white;margin:0;padding:20px}
+main{max-width:600px;margin:auto}
+section{background:#172033;padding:20px;border-radius:16px;margin:15px 0}
+h1{color:#62d6ff}
+label{display:block;margin-top:14px}
+input{box-sizing:border-box;width:100%;padding:12px;margin-top:6px;border-radius:8px;border:1px solid #64748b;font-size:17px}
+button{width:100%;padding:14px;margin-top:20px;background:#16a34a;color:white;border:0;border-radius:8px;font-size:17px}
+#resultado{white-space:pre-line;line-height:1.8}
+</style>
+</head>
+<body>
+<main>
+<h1>⚡ Calculadora de Energia</h1>
+<p>Calcule o consumo elétrico e o custo mensal dos aparelhos.</p>
+<section>
+<label>Nome do aparelho</label>
+<input id="nome" placeholder="Ex.: Ar-condicionado">
+<label>Potência em watts (W)</label>
+<input id="potencia" type="number" placeholder="Ex.: 1500">
+<label>Quantidade de aparelhos</label>
+<input id="quantidade" type="number" value="1">
+<label>Horas de uso por dia</label>
+<input id="horas" type="number" value="10">
+<label>Dias de uso por mês</label>
+<input id="dias" type="number" value="30">
+<label>Preço do kWh em reais (R$)</label>
+<input id="preco" type="number" value="0.76" step="0.01">
+<button onclick="calcular()">Calcular consumo</button>
+</section>
+<section id="resultado">O resultado aparecerá aqui.</section>
+</main>
+<script>
+function calcular(){
+const nome=document.getElementById('nome').value||'Aparelho';
+const p=Number(document.getElementById('potencia').value);
+const q=Number(document.getElementById('quantidade').value);
+const h=Number(document.getElementById('horas').value);
+const d=Number(document.getElementById('dias').value);
+const preco=Number(document.getElementById('preco').value);
+if(p<=0||q<=0||h<0||h>24||d<1||d>31||preco<0){
+document.getElementById('resultado').textContent='Confira os valores informados.';
+return;
+}
+const consumo=p*q*h*d/1000;
+const custo=consumo*preco;
+document.getElementById('resultado').textContent=
+'📊 Resultado: '+nome+
+'\nConsumo diário: '+(p*q*h/1000).toFixed(2)+' kWh'+
+'\nConsumo mensal: '+consumo.toFixed(2)+' kWh'+
+'\nCusto mensal estimado: R$ '+custo.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+</script>
+</body>
+</html>
