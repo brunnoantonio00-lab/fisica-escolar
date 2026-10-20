@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calculadora de Consumo Elétrico</title>
+<style>
+:root{--bg:#0b1220;--panel:#121d30;--line:#26364f;--text:#f2f6ff;--muted:#aebbd0;--blue:#5bb7ff;--green:#65e6b0}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:linear-gradient(145deg,#09111f,#10223b);color:var(--text);min-height:100vh}
+main{max-width:980px;margin:auto;padding:28px 16px 48px}.hero{padding:22px 0 18px}.tag{color:var(--green);font-weight:700;font-size:.8rem;letter-spacing:.12em;text-transform:uppercase}
+h1{font-size:clamp(2rem,6vw,3.4rem);line-height:1.04;margin:10px 0}p{color:var(--muted);line-height:1.55}.layout{display:grid;grid-template-columns:1.15fr .85fr;gap:16px}.panel{background:rgba(18,29,48,.94);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:0 12px 35px #0002}
+h2{font-size:1.15rem;margin:0 0 16px}.fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{display:flex;flex-direction:column;gap:6px}.field.full{grid-column:1/-1}label{font-size:.88rem;color:var(--muted)}input{width:100%;padding:12px;border-radius:10px;border:1px solid #344762;background:#0a1425;color:var(--text);font:inherit}input:focus{outline:2px solid var(--blue);border-color:transparent}.hint{font-size:.78rem;color:var(--muted);margin-top:4px}.btn{border:0;border-radius:10px;padding:12px 16px;font-weight:750;font-size:.95rem;cursor:pointer}.primary{background:var(--blue);color:#071526}.secondary{background:#243650;color:var(--text)}.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:16px}
+.result{background:#0a1627;border:1px solid #29405c;border-radius:14px;padding:16px;margin-bottom:12px}.result small{color:var(--muted)}.big{font-size:clamp(1.8rem,5vw,2.5rem);font-weight:800;letter-spacing:-.04em;margin:5px 0}.green{color:var(--green)}.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}.stat{padding:13px;border:1px solid var(--line);border-radius:12px}.stat strong{display:block;font-size:1.15rem;margin-top:4px}.equation{background:#0a1425;padding:13px;border-radius:10px;color:#d9e9ff;line-height:1.7;margin-top:12px;overflow-wrap:anywhere}
+.list{margin-top:16px}.appliance{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}.appliance:last-child{border-bottom:0}.appliance small{display:block;color:var(--muted);margin-top:3px}.remove{border:1px solid #4b3850;background:#2a1b2b;color:#ffb8c6;border-radius:8px;padding:7px 10px;cursor:pointer}.foot{font-size:.8rem;color:var(--muted);margin-top:18px}.error{color:#ffb8c6;min-height:1.2em;font-size:.85rem}
+@media(max-width:720px){.layout{grid-template-columns:1fr}.fields{grid-template-columns:1fr 1fr}.panel{padding:16px}}@media(max-width:420px){.fields{grid-template-columns:1fr}.field.full{grid-column:auto}}
+</style>
+</head>
+<body><main>
+<header class="hero"><div class="tag">Física • Energia elétrica</div><h1>Quanto seus aparelhos<br><span class="green">gastam de energia?</span></h1><p>Informe a potência dos aparelhos, o tempo de uso e o preço do kWh. A calculadora estima o consumo e o custo mensal automaticamente.</p></header>
+<div class="layout">
+<section class="panel"><h2>⚡ Dados do aparelho</h2>
+<div class="fields">
+<div class="field full"><label for="name">Nome do aparelho (opcional)</label><input id="name" placeholder="Ex.: ar-condicionado"></div>
+<div class="field"><label for="power">Potência (W)</label><input id="power" type="number" min="0" step="any" placeholder="Ex.: 1500"></div>
+<div class="field"><label for="qty">Quantidade</label><input id="qty" type="number" min="1" step="1" value="1"></div>
+<div class="field"><label for="hours">Horas de uso por dia</label><input id="hours" type="number" min="0" max="24" step="any" value="8"></div>
+<div class="field"><label for="days">Dias de uso por mês</label><input id="days" type="number" min="0" max="31" step="1" value="30"></div>
+<div class="field full"><label for="price">Preço do kWh (R$)</label><input id="price" type="number" min="0" step="any" value="0.76"></div>
+</div><p class="hint">Use a potência em watts (W), como aparece na etiqueta do aparelho. Se estiver em kW, multiplique por 1.000.</p>
+<div class="error" id="error" role="status"></div>
+<div class="actions"><button class="btn primary" id="add">Calcular e adicionar</button><button class="btn secondary" id="reset">Limpar tudo</button></div>
+<div class="list" id="list"><p>Adicione um aparelho para começar.</p></div>
+</section>
+<aside class="panel"><h2>📊 Resultado mensal</h2>
+<div class="result"><small>Consumo total estimado</small><div class="big" id="totalKwh">0,00 kWh</div><small>por mês</small></div>
+<div class="result"><small>Custo mensal estimado</small><div class="big green" id="totalCost">R$ 0,00</div><small>sem taxas extras ou bandeiras tarifárias</small></div>
+<div class="stats"><div class="stat"><small>Consumo diário</small><strong id="daily">0,00 kWh</strong></div><div class="stat"><small>Custo anual estimado</small><strong id="yearly">R$ 0,00</strong></div></div>
+<h2 style="margin-top:20px">🧮 Como é calculado?</h2><div class="equation" id="formula">Energia (kWh) = Potência (W) × horas × dias ÷ 1.000<br>Custo = Consumo (kWh) × preço do kWh</div>
+<p class="foot">É uma estimativa: o consumo real pode variar conforme o aparelho, o uso e a conta de energia.</p>
+</aside></div>
+<p class="foot">Projeto escolar de Física • Potência elétrica, energia e consumo.</p>
+</main>
+<script>
+const $=id=>document.getElementById(id);let items=[];
+const fmt=(n,d=2)=>n.toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d});
+function totals(){let kwh=items.reduce((s,a)=>s+a.kwh,0),daily=items.reduce((s,a)=>s+a.daily,0),price=Number($('price').value)||0; $('totalKwh').textContent=fmt(kwh)+' kWh';$('totalCost').textContent='R$ '+fmt(kwh*price);$('daily').textContent=fmt(daily)+' kWh';$('yearly').textContent='R$ '+fmt(kwh*price*12);if(items.length){$('formula').innerHTML='Energia mensal = potência (W) × quantidade × horas/dia × dias/mês ÷ 1.000<br><br>'+items.map(a=>`${a.name}: ${fmt(a.power)} × ${a.qty} × ${fmt(a.hours)} × ${a.days} ÷ 1.000 = <b>${fmt(a.kwh)} kWh</b>`).join('<br>')+'<br><br>Custo mensal = '+fmt(kwh)+' × R$ '+fmt(price)+' = <b>R$ '+fmt(kwh*price)+'</b>';}else $('formula').innerHTML='Energia (kWh) = Potência (W) × horas × dias ÷ 1.000<br>Custo = Consumo (kWh) × preço do kWh';}
+function render(){if(!items.length){$('list').innerHTML='<p>Adicione um aparelho para começar.</p>';totals();return}$('list').innerHTML='<h2 style="margin-top:20px">Aparelhos adicionados</h2>'+items.map((a,i)=>`<div class="appliance"><div><b>${escapeHtml(a.name)}</b><small>${fmt(a.kwh)} kWh/mês · R$ ${fmt(a.kwh*(Number($('price').value)||0))}/mês</small></div><button class="remove" data-i="${i}" aria-label="Remover ${escapeHtml(a.name)}">Remover</button></div>`).join('');document.querySelectorAll('.remove').forEach(b=>b.onclick=()=>{items.splice(Number(b.dataset.i),1);render()});totals()}
+function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+$('add').onclick=()=>{let power=Number($('power').value),qty=Number($('qty').value),hours=Number($('hours').value),days=Number($('days').value),price=Number($('price').value);if($('power').value===''||power<=0||qty<1||hours<0||hours>24||days<0||days>31||$('price').value===''||price<0){$('error').textContent='Confira os dados: potência maior que zero, horas entre 0 e 24 e valores válidos.';return}$('error').textContent='';let kwh=power*qty*hours*days/1000;items.push({name:$('name').value.trim()||'Aparelho '+(items.length+1),power,qty,hours,days,kwh,daily:power*qty*hours/1000});render();$('name').value='';$('power').value='';};
+$('price').oninput=()=>{render()};$('reset').onclick=()=>{items=[];$('error').textContent='';render()};render();
+</script></body></html>
